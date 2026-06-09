@@ -5,5 +5,107 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="text">Chat page</h1>
+<header class="chat-header">
+    <div class="header-left">
+        <div class="logo-area">
+            <img src="{{ url_for('chat_page.static', filename='images/chat_logo.png') }}" alt="Logo" class="chat-logo-img">
+            <span class="logo-text">Chat</span>
+        </div>
+    </div>
+
+    <div class="header-center">
+        
+    </div>
+
+    <div class="header-right">
+        <div class="user-controls">
+            <button class="control-btn notification-btn">
+                <img src="{{ url_for('chat_page.static', filename='images/notification.png') }}" alt="Notifications" class="header-icon">
+                <span class="badge"></span>
+            </button>
+            
+            <button class="control-btn" id="settings-btn">
+                <img src="{{ url_for('chat_page.static', filename='images/settings.png') }}" alt="Settings" class="header-icon">
+            </button>
+            
+            <div class="user-avatar">
+                AA
+            </div>
+        </div>
+    </div>
+</header>
+<div id="settings-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Налаштування</h2>
+            <span class="close-modal-btn" id="close-modal-btn">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            
+            <div class="profile-image-section">
+                <h3>Зображення профілю</h3>
+                <div class="avatar-block">
+                    <div class="avatar-circle">AA</div>
+                    
+                    <div class="avatar-actions">
+                        <button type="button" class="btn-change">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            Змінити
+                        </button>
+                        <button type="button" class="btn-delete-photo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Видалити
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <form id="settings-form">
+                
+                <div class="field-group">
+                    <label>Ім'я</label>
+                    <input type="text" name="first_name" value="Александра">
+                </div>
+
+                <div class="field-group">
+                    <label>Прізвище</label>
+                    <input type="text" name="last_name" value="Андрієвська">
+                </div>
+
+                <div class="field-group">
+                    <label>Ім'я користувача</label>
+                    <input type="text" name="username" value="@alexxxx">
+                </div>
+
+                <div class="field-group">
+                    <label>Стать</label>
+                    <div class="select-wrapper">
+                        <select name="gender">
+                            <option value="female" selected>Жіноча</option>
+                            <option value="male">Чоловіча</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Вік</label>
+                    <input type="text" name="birth_date" value="14 квіт. 1995 (30 років)">
+                </div>
+
+                <div class="delete-account-container">
+                    <button type="button" class="btn-delete-account">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Видалити аккаунт
+                    </button>
+                </div>
+
+            </form>
+        </div> <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="cancel-modal-btn">Скасувати</button>
+            <button type="submit" form="settings-form" class="btn-primary">Зберегти</button>
+        </div>
+
+    </div> </div>
+<script src="{{ url_for('chat_page.static', filename='js/modal.js') }}"></script>
 {% endblock %}

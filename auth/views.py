@@ -30,23 +30,27 @@ def registration_view():
                         <body style="margin:0; padding:0; font-family:Arial, sans-serif; background:#f6f8fb;">
                             <div style="max-width:700px; margin:0 auto; padding:24px;">
                                 <div style="background:#ffffff; border-radius:28px; overflow:hidden; box-shadow:0 20px 60px rgba(15,23,42,0.08);">
+                                    
                                     <div style="padding:36px 32px 24px; text-align:center;">
                                         <h1 style="font-size:32px; margin:0 0 16px; color:#111827;">Вас вітає команда World IT!</h1>
                                         <p style="font-size:16px; line-height:1.8; color:#4b5563; margin:0 0 30px;">
                                             Щоб завершити реєстрацію та переконатися, що саме ви є власником цієї електронної адреси, будь ласка, підтвердіть свою пошту.
                                         </p>
                                         
-                                        <a href="{confirm_link} " style="display:inline-block; width:100%; max-width:420px; margin:0 auto; padding:18px 0; background:#111827; color:#ffffff; text-decoration:none; border-radius:14px; font-size:16px; font-weight:700;">
+                                        <a href="{confirm_link}" style="display:inline-block; width:100%; max-width:420px; margin:0 auto; padding:18px 0; background:#111827; color:#ffffff; text-decoration:none; border-radius:14px; font-size:16px; font-weight:700;">
                                             Підтвердити пошту
                                         </a>
                                     </div>
-                                    <div style="background:#f6f8fb; padding:0 0 32px; text-align:center;">
-                                        <img src="{{ url_for('registration.static', filename='images/people.jpg') }}" alt="World IT illustration" style="width:100%; max-width:620px; border:none; display:block; margin:0 auto;" />
+                                    
+                                    <div style="background:#ffffff; padding:0 32px 24px; text-align:center;">
+                                        <img src="https://i.ibb.co/cKDbr7KX/photo-2026-06-09-23-02-37.jpg" alt="World IT illustration" style="width:100%; max-width:500px; border-none; border-radius:16px; display:block; margin:0 auto;" />
                                     </div>
+                                    
                                     <div style="padding:0 32px 36px; text-align:center; color:#6b7280; font-size:14px; line-height:1.7;">
                                         <p style="margin:0;">Якщо у вас виникнуть питання — ми завжди раді допомогти!</p>
                                         <p style="margin:10px 0 0;">З найкращими побажаннями, команда WIT Academy</p>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </body>
@@ -57,7 +61,7 @@ def registration_view():
                     smtp.starttls()
                     smtp.login(user = EMAIL, password = PASSWORD)
                     email_msg = msg.EmailMessage()
-                    email_msg["Subject"] = "test"
+                    email_msg["Subject"] = "Перевірка пошти"
                     email_msg["From"] = EMAIL
                     email_msg["To"] = email
                     email_msg.add_alternative(html, subtype = "html")
