@@ -1,12 +1,13 @@
-from app.db import db
+from app.database import DATABASE
 import flask_login
 
-class User(db.Model, flask_login.UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String, unique=True)
-    password_hash = db.Column(db.String)
-    first_name = db.Column(db.String)
-    last_name = db.Column(db.String)
-    avatar_path = db.Column(db.String)
-    gender = db.Column(db.String)
-    birth_date = db.Column(db.Date)
+class User(DATABASE.Model, flask_login.UserMixin):
+    id = DATABASE.Column(DATABASE.Integer, primary_key=True)
+    email = DATABASE.Column(DATABASE.String, unique=True)
+    password_hash = DATABASE.Column(DATABASE.String)
+    first_name = DATABASE.Column(DATABASE.String)
+    last_name = DATABASE.Column(DATABASE.String)
+    avatar_path = DATABASE.Column(DATABASE.String)
+    gender = DATABASE.Column(DATABASE.String)
+    birth_date = DATABASE.Column(DATABASE.Date)
+    is_verified = DATABASE.Column(DATABASE.Boolean, default = False)
