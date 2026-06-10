@@ -1,6 +1,175 @@
-/* ==========================================================================
-   ОБНОВЛЕННЫЙ СТИЛЬ ХЕДЕРА (ИКОНКИ СТРОГО СПРАВА КАК НА МАКЕТЕ)
-   ========================================================================== */
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100vh - 64px); 
+    box-sizing: border-box;
+}
+
+
+#chats-div {
+    display: flex;
+    flex-direction: column;
+    border: 1.7px solid rgba(90, 90, 90, 0.075);
+    width: 21%;
+    height: 100%;
+    padding: 20px;
+
+}
+
+#messages-div {
+    border: 1.7px solid rgba(90, 90, 90, 0.075);
+    width: 54%;
+    height: 100%;
+}
+
+#members-div {
+    border: 1.7px solid rgba(90, 90, 90, 0.075);
+    width: 26%;
+    height: 100%;
+}
+.member-div {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    background-color: gray;
+}
+
+.make_chat_button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 20vh;
+}
+#create_chat{
+    width: 220%;
+    height: 35px;
+    border: 1.5px solid #2563eb;
+    background: transparent;
+    color: #2563eb;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.4s;
+}
+#create_chat:hover {
+    background: rgba(49, 99, 207, 0.726);
+    color: white;
+    transition: 0.4s;
+
+}
+.search-container {
+    padding-bottom: 10px;
+}
+.search-input {
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    padding: 10px 8px 10px 5px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #1c1e21;
+    background-color: #f0f2f5;
+    
+
+}
+.search-input:focus {
+        outline: none;
+        
+}
+
+
+#your_chat {
+    font-size: 24px;
+}
+
+.your_chat {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding-left: 25px;
+}
+
+
+
+
+.saved_messages {
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 50% !important;
+    background-color: #008cff !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 21px !important;
+    font-weight: 600 !important;
+}
+
+#saved_messages_text{
+    position: relative;
+    font-size: 16px;
+    font-weight: 600;
+}
+.saved_messages_text{
+    display: flex;
+    flex-direction: column;
+    padding-top:2px ;
+}
+#last_saved_text{
+    font-size: 12px;
+    color: rgb(100, 100, 100);
+}
+.saved_messages_text h1,
+.saved_messages_text p {
+    margin: 0;
+    padding-bottom: 8px;
+}
+
+#saved_time{
+    font-size: 12px;
+    color: rgb(134, 134, 134);
+    padding-left: 80px;
+    padding-top: 3px;
+}
+
+.saved_time_text{
+    display: flex;
+    flex-direction: row;
+    
+}
+
+
+.chat-header-container  {
+    
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+.chat-header-container button {
+    padding-top: 12px;
+    background:transparent;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+
+    
+}
+
+.delete-icon {
+    background-color: none;
+    width: 36px;
+    height: 36px;
+}
+
 .chat-header {
     display: flex;
     align-items: center;
@@ -11,11 +180,10 @@
     box-sizing: border-box;
 }
 
-/* Левая часть (Логотип) */
 .header-left {
     display: flex;
     align-items: center;
-    width: 260px; /* Фиксируем ширину под левую панель чатов */
+    width: 260px;
     flex-shrink: 0;
 }
 
@@ -36,11 +204,9 @@
     color: #111827;
 }
 
-/* Средняя часть (Название текущей вкладки) */
 .header-center {
     display: flex;
     align-items: center;
-    /* На макете заголовок "Користувачі" стоит в начале контентной области */
     padding-left: 16px; 
 }
 
@@ -51,18 +217,16 @@
     color: #111827;
 }
 
-/* Правая часть (Иконки и аватарка) — теперь она забирает всё свободное место 
-   и толкает свое содержимое к правому краю */
 .header-right {
-    flex: 1; /* Занимает всё оставшееся пространство посередине */
+    flex: 1; 
     display: flex;
-    justify-content: flex-end; /* Намертво прижимает иконки к правому краю экрана */
+    justify-content: flex-end; 
 }
 
 .user-controls {
     display: flex;
     align-items: center;
-    gap: 20px; /* Делаем расстояние между иконками чуть свободнее */
+    gap: 20px; 
 }
 
 .control-btn {
@@ -77,7 +241,7 @@
 }
 
 .control-btn:hover {
-    transform: scale(1.05); /* Легкий интерактив при наведении */
+    transform: scale(1.05); 
 }
 
 .header-icon {
@@ -98,13 +262,7 @@
     font-weight: 600;
 }
 
-/* ================= ПОЛНОСТЬЮ ИСПРАВЛЕННЫЕ СТИЛИ МОДАЛКИ ================= */
-
-/* ==========================================================================
-   ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ МОДАЛЬНОГО ОКНА НАСТРОЕК (ПОД ТВОЙ HTML)
-   ========================================================================== */
-
-/* 1. Главный контейнер (Задний полупрозрачный фон) */
+/* модальное окно */
 .modal {
     position: fixed !important;
     top: 0 !important;
@@ -113,34 +271,34 @@
     bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background-color: rgba(15, 23, 42, 0.45) !important; /* Размытый темный фон */
+    background-color: rgba(15, 23, 42, 0.45) !important; 
+    overflow-y: auto !important;
     
-    /* Центрирование окна по вертикали и горизонтали */
-    display: none; /* Переключается на 'flex' через твой JavaScript */
+    
+    display: none; 
     align-items: center !important;
     justify-content: center !important;
     
     padding: 16px !important;
-    z-index: 99999 !important; /* Поверх всех элементов чата */
+    z-index: 99999 !important; 
     box-sizing: border-box !important;
 }
 
-/* 2. Само белое аккуратное окошко настроек */
 .modal-content {
     width: 100% !important;
-    max-width: 440px !important; /* Фиксированная аккуратная ширина как в Figma */
+    max-width: 440px !important; 
     background: #ffffff !important;
     border-radius: 20px !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
     overflow: hidden !important;
-    max-height: 85vh !important; /* Чтобы окно не уходило под экран */
+    max-height: 85vh !important; 
     display: flex !important;
     flex-direction: column !important;
     box-sizing: border-box !important;
     animation: modalFadeIn 0.3s ease;
+    overflow-y: auto !important;
 }
 
-/* Шапка окна */
 .modal-header {
     display: flex !important;
     align-items: center !important;
@@ -157,7 +315,6 @@
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Крестик закрытия */
 .close-modal-btn {
     border: none !important;
     background: transparent !important;
@@ -172,14 +329,13 @@
     color: #111827 !important;
 }
 
-/* Контентная область формы */
 .modal-body {
     padding: 16px 20px !important;
-    overflow-y: auto !important; /* Внутренний скролл, если экран очень маленький */
+    overflow-y: auto !important; 
     display: block !important;
+    overflow-y: auto;
 }
 
-/* --- Секция аватарки --- */
 .profile-image-section h3 {
     font-size: 13px !important;
     font-weight: 600 !important;
@@ -214,7 +370,6 @@
     gap: 8px !important;
 }
 
-/* Кнопки управления фото */
 .avatar-actions button {
     display: flex !important;
     align-items: center !important;
@@ -239,7 +394,6 @@
     background-color: #f9fafb !important;
 }
 
-/* --- Поля ввода формы (Строго друг под другом) --- */
 .field-group {
     display: flex !important;
     flex-direction: column !important;
@@ -256,13 +410,12 @@
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Сжатые аккуратные инпуты */
 .field-group input,
 .field-group select {
     width: 100% !important;
     border: 1px solid #d1d5db !important;
     border-radius: 10px !important;
-    padding: 10px 14px !important; /* Уменьшили высоту, убрав гигантские отступы */
+    padding: 10px 14px !important; 
     font-size: 14px !important;
     color: #111827 !important;
     background-color: #ffffff !important;
@@ -276,7 +429,6 @@
     border-color: #2563eb !important;
 }
 
-/* Кнопка "Видалити аккаунт" */
 .delete-account-container {
     margin-top: 14px !important;
     margin-bottom: 4px !important;
@@ -333,15 +485,22 @@
 .btn-primary {
     background: #2563eb !important;
     color: #ffffff !important;
-    flex: 1 !important; /* Кнопка "Зберегти" красиво растягивается на остаток ширины */
+    flex: 1 !important; 
 }
 
 .btn-primary:hover {
     background: #1d4ed8 !important;
 }
 
-/* Анимация плавного появления */
 @keyframes modalFadeIn {
     from { opacity: 0; transform: scale(0.96); }
     to { opacity: 1; transform: scale(1); }
 }
+
+
+
+
+
+
+
+

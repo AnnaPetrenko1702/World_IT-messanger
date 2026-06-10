@@ -9,6 +9,10 @@ import email.message as msg
 from flask import session
 
 def registration_view():
+
+    if flask_login.current_user.is_authenticated:
+        return flask.redirect('/')
+
     if flask.request.method == 'POST':
         email = flask.request.form.get('email')
         password = flask.request.form.get('password')
@@ -72,6 +76,8 @@ def registration_view():
     return flask.render_template('registration.html')
 
 def confirm_email_view():
+    if flask_login.current_user.is_authenticated:
+        return flask.redirect('/')
     email = flask.request.args.get('email')
     if not email:
         return 'Невірне посилання для підтвердження пошти'
@@ -88,7 +94,8 @@ def confirm_email_view():
     return flask.redirect('/')
     
 def auth_view():
-
+    if flask_login.current_user.is_authenticated:
+        return flask.redirect('/')
     if flask.request.method == 'POST':
 
         email = flask.request.form.get('email')
@@ -104,6 +111,8 @@ def auth_view():
     return flask.render_template('auth.html')
 
 def confirm_email_page():
+    if flask_login.current_user.is_authenticated:
+        return flask.redirect('/')
     email = session.get('email')
     if email:
         return flask.render_template('email_confirm.html')

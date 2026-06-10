@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+
 <header class="chat-header">
     <div class="header-left">
         <div class="logo-area">
@@ -29,24 +30,103 @@
             </button>
             
             <div class="user-avatar">
-                AA
+                {{ (user.first_name[:1] if user.first_name else '') ~
+                    (user.last_name[:1] if user.last_name else '') }}
             </div>
         </div>
     </div>
 </header>
+
+
+
+
+
+
+
+
+<main>
+    
+    <div id="chats-div">
+        
+        <div class="search-container">
+            <input type="text" placeholder="Пошук чатів..." class="search-input">
+        </div>
+        <div id="create_chat-btn" class="create_chat-btn">
+            <div class="search-container">
+                <input type="text" placeholder="Введіть назву чату" class="search-input">
+            </div>
+            <button>create</button>
+        </div>
+
+        <div class="make_chat_button">
+            <form method="POST">
+                <input type="hidden" name="action" value="create_chat">
+                <button id="create_chat" type="submit" > + Створити чат</button>
+            </form>
+        </div>
+        <div class="chat-header-container">
+            <h1 id="your_chat">Ваш Чат</h1>
+            <button class="delete-chat-btn">
+                <img src="{{ url_for('chat_page.static', filename='images/delete.png') }}" class="delete-icon" alt="delete">
+            </button>
+        </div>
+
+        <div class="your_chat">
+            <div class="saved_messages">SV</div>
+
+            <div class = 'saved_messages_text'>
+                <div class="saved_time_text">
+                    <h1 id="saved_messages_text">Saved Messages</h1>
+                    <p id="saved_time">15m ago</p>
+                </div>
+                
+                <p id="last_saved_text">Here you can write a text</p>
+            </div>
+            
+            
+        </div>
+        
+    
+    </div>
+
+    <div id="messages-div">
+    </div>
+
+    <div id="members-div">
+    </div>
+    
+
+
+</main>
+
+
+
+
+
+
+
+
+
+<!-- модальное окно -->
 <div id="settings-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2>Налаштування</h2>
             <span class="close-modal-btn" id="close-modal-btn">&times;</span>
         </div>
+        <div class="flex-container">
+    
+    
         
         <div class="modal-body">
             
             <div class="profile-image-section">
                 <h3>Зображення профілю</h3>
                 <div class="avatar-block">
-                    <div class="avatar-circle">AA</div>
+                    <div class="avatar-circle">
+                        {{ (user.first_name[:1] if user.first_name else '') ~
+                            (user.last_name[:1] if user.last_name else '') }}
+                    </div>
                     
                     <div class="avatar-actions">
                         <button type="button" class="btn-change">
@@ -61,36 +141,45 @@
                 </div>
             </div>
 
-            <form id="settings-form">
+
+            <form id="settings-form" method="POST">
+
+                <input type="hidden" name="action" value="update_profile">
                 
                 <div class="field-group">
                     <label>Ім'я</label>
-                    <input type="text" name="first_name" value="Александра">
+                    <input type="text" name="first_name" value="{{ user.first_name or '' }}">
                 </div>
 
                 <div class="field-group">
                     <label>Прізвище</label>
-                    <input type="text" name="last_name" value="Андрієвська">
+                    <input type="text" name="last_name" value="{{ user.last_name or '' }}">
                 </div>
 
                 <div class="field-group">
                     <label>Ім'я користувача</label>
-                    <input type="text" name="username" value="@alexxxx">
+                    <input type="text" name="username" value="{{ user.username or '' }}">
                 </div>
 
                 <div class="field-group">
                     <label>Стать</label>
                     <div class="select-wrapper">
                         <select name="gender">
-                            <option value="female" selected>Жіноча</option>
-                            <option value="male">Чоловіча</option>
+                            {% if user.gender == "male" %}
+                                <option value="female" >Жіноча</option>
+                                <option value="male" selected>Чоловіча</option>
+                            {% else %}
+                                <option value="female" selected>Жіноча</option>
+                                <option value="male">Чоловіча</option>
+                            {% endif %}
                         </select>
                     </div>
                 </div>
 
                 <div class="field-group">
                     <label>Вік</label>
-                    <input type="text" name="birth_date" value="14 квіт. 1995 (30 років)">
+                    <input type="date" name="birth_date"
+                        value="{{ user.birth_date.strftime('%Y-%m-%d') if user.birth_date else '' }}">
                 </div>
 
                 <div class="delete-account-container">
@@ -103,9 +192,20 @@
             </form>
         </div> <div class="modal-footer">
             <button type="button" class="btn-secondary" id="cancel-modal-btn">Скасувати</button>
-            <button type="submit" form="settings-form" class="btn-primary">Зберегти</button>
+            <button type="submit" form="settings-form" class="btn-primary" id="save-modal-btn">Зберегти</button>
         </div>
 
     </div> </div>
+
+
+
+
+
+
+
+
+
+
+
 <script src="{{ url_for('chat_page.static', filename='js/modal.js') }}"></script>
 {% endblock %}
