@@ -21,11 +21,12 @@ email_confirm.add_url_rule('/confirm_page',
                         view_func=confirm_email_page,
                         methods=['GET'])
 
-chat_blueprint.add_url_rule('/', 
-                            view_func=handle_chat_page, 
-                            methods = ["GET", "POST"])
-
-
+# chat_blueprint.add_url_rule('/', 
+#                             view_func=handle_chat_page, 
+#                             methods = ["GET", "POST"])
+chat_blueprint.add_url_rule('/', view_func=handle_chat_page, defaults={'chat_id': None}, methods=['GET', 'POST'])
+chat_blueprint.add_url_rule('/chat/', view_func=handle_chat_page, defaults={'chat_id': None}, methods=['GET', 'POST'])
+chat_blueprint.add_url_rule('/chat/<int:chat_id>', view_func=handle_chat_page, methods=['GET', 'POST'])
 app.register_blueprint(registration)
 app.register_blueprint(auth)
 app.register_blueprint(email_confirm)

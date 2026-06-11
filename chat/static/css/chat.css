@@ -590,6 +590,10 @@ main {
     margin-top: 15px;
 }
 
-
+.chat-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
 
 

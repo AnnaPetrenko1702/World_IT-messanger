@@ -5,49 +5,38 @@ import flask_login
 from app.database import DATABASE
 from auth.models import Groups, User
 
-
-def handle_chat_page():
+def handle_chat_page(chat_id=None):
+    
     if not flask_login.current_user.is_authenticated:
         return flask.redirect('/registration')
 
+    
     if flask.request.method == 'POST':
         action = flask.request.form.get("action")
 
-        # создание чата
+        
         if action == "create_chat":
             current_user_id = int(flask_login.current_user.id)
-
             existing_group = Groups.query.filter_by(owner_id=current_user_id).first()
             if existing_group:
-                print(f"User {current_user_id} already owns a group!")
-                return flask.redirect(flask.url_for('chat_page.handle_chat_page'))
+                return flask.redirect('/chat/')
 
             chosen_name = flask.request.form.get('custom_group_name')
             if not chosen_name or chosen_name.strip() == "":
                 user_name = flask_login.current_user.username or f"User{current_user_id}"
-                unique_suffix = random.randint(1000, 9999)
-                chosen_name = f"Group {user_name} #{unique_suffix}"
+                chosen_name = f"Group {user_name} #{random.randint(1000, 9999)}"
 
-            group = Groups(
-                group_name = chosen_name,
-                owner_id = current_user_id   
-            )
+            group = Groups(group_name=chosen_name, owner_id=current_user_id)
             group.users.append(flask_login.current_user)
-
             DATABASE.session.add(group)
             DATABASE.session.commit()
+            return flask.redirect('/chat/')
 
-            return flask.redirect(flask.url_for('chat_page.handle_chat_page'))
-
-        # обновление профиля
+        
         elif action == "update_profile":
-            first_name = flask.request.form.get('first_name')
-            if first_name == '': first_name = None
-            last_name = flask.request.form.get('last_name')
-            if last_name == '': last_name = None
-            username = flask.request.form.get('username')
-            if username == '': username = None
-
+            first_name = flask.request.form.get('first_name') or None
+            last_name = flask.request.form.get('last_name') or None
+            username = flask.request.form.get('username') or None
             gender = flask.request.form.get('gender')
             birth_date_str = flask.request.form.get('birth_date')
             birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date() if birth_date_str else None
@@ -64,16 +53,46 @@ def handle_chat_page():
                 flask_login.current_user.username = username
 
             DATABASE.session.commit()
-            return flask.redirect(flask.url_for('chat_page.handle_chat_page'))
+            return flask.redirect('/chat/')
+
+        
+        elif action == "delete_chat":
+            current_user_id = int(flask_login.current_user.id)
+            chat_to_delete = Groups.query.filter_by(owner_id=current_user_id).first()
+            
+            if chat_to_delete:
+                chat_to_delete.users.clear()
+                DATABASE.session.delete(chat_to_delete)
+                DATABASE.session.commit()
+            
+            return flask.redirect('/chat/')
 
     current_user_id = int(flask_login.current_user.id)
-
     my_group = Groups.query.filter_by(owner_id=current_user_id).first()
     other_groups = Groups.query.filter(Groups.owner_id != current_user_id).all()
+    
+    active_chat = None
+    if chat_id:
+        active_chat = Groups.query.get(chat_id)
+        if not active_chat:
+            return flask.redirect('/chat/')
+
+    
+    if my_group is None:
+        class EmptyGroup:
+            id = None
+            group_name = ""
+        template_my_group = EmptyGroup()
+        has_chat = False
+    else:
+        template_my_group = my_group
+        has_chat = True
 
     return flask.render_template(
         'chat_page.html', 
         user=flask_login.current_user, 
-        my_group=my_group,
-        other_groups=other_groups
+        my_group=template_my_group,  
+        has_chat=has_chat,            
+        other_groups=other_groups,
+        active_chat=active_chat
     )
