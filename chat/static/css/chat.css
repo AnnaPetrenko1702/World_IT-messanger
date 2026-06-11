@@ -499,7 +499,96 @@ main {
 
 
 
+/* Общие контейнеры и отступы для кнопок создания */
+.make_chat_button, .create_chat-area {
+    margin-bottom: 15px;
+}
 
+/* Стилизация заголовков блоков */
+.block-title {
+    margin: 0;
+}
+
+.main-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #000000;
+}
+
+.community-header {
+    margin-bottom: 15px;
+}
+
+.community-title {
+    color: #666666;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Разделительная линия между блоками */
+.section-divider {
+    border: 0;
+    border-top: 1px solid #eaeaea;
+    margin: 20px 0;
+}
+
+/* Специфические стили для карточки личного чата */
+.owned-chat {
+    margin-bottom: 20px;
+}
+
+.chat-name-heading {
+    margin: 0;
+    font-size: 16px;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+/* Цвета аватарок (Разделение по цветам как в макете) */
+.my-avatar {
+    background-color: #4a90e2 !important; /* Насыщенный синий для своего */
+}
+
+.other-avatar {
+    background-color: #5c6bc0 !important; /* Спокойный индиго для остальных */
+}
+
+/* Вспомогательный текст под названиями чатов */
+.chat-subtext {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: #a0a0a0;
+}
+
+.client-subtext {
+    color: #888888;
+}
+
+/* Список для остальных чатов с фиксированным отступом друг от друга */
+.other-chats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Расстояние между чужими чатами */
+}
+
+/* Красивые заглушки-подсказки, если чатов нет */
+.empty-placeholder {
+    color: #b0b0b0;
+    font-size: 14px;
+    margin: 8px 0 25px 0;
+    font-style: italic;
+}
+
+.text-center {
+    text-align: center;
+    margin-top: 15px;
+}
 
 
 
