@@ -45,62 +45,17 @@
 
 
 <main>
-<!-- <div id="chats-div">
-        
-    <div class="search-container">
-        <input type="text" placeholder="Пошук чатів..." class="search-input">
-    </div>
-    
-    {% if not my_group %}
-        <div class="make_chat_button">
-            <button id="open_modal_btn"> + Створити чат</button>
-        </div>
-
-        <div id="create_chat-area" class="create_chat-area" style="display: none;">
-            <form method="POST">
-                <input type="hidden" name="action" value="create_chat">
-                <input type="text" name="custom_group_name" placeholder="Введіть назву чату" class="create" required>
-                
-                <button type="submit">create</button>
-                <button type="button" id="close_modal_btn">cancel</button>
-            </form>
-        </div>
-    {% endif %}
-
-    <div class="chat-header-container">
-        <h1 id="your_chat">Ваш Чат</h1>
-        <button class="delete-chat-btn">
-            <img src="{{ url_for('chat_page.static', filename='images/delete.png') }}" class="delete-icon" alt="delete">
-        </button>
-    </div>
-
-    {% if my_group %}
-        <div class="your_chat">
-            <div class="saved_messages">{{ my_group.group_name[:2].upper() }}</div>
-
-            <div class="saved_messages_text">
-                <div class="saved_time_text">
-                    <h1 id="saved_messages_text">{{ my_group.group_name }}</h1>
-                    <p id="saved_time">Just now</p>
-                </div>
-                
-                <p id="last_saved_text">Чат успішно створено. Напишіть щось...</p>
-            </div>
-        </div>
-    {% endif %}
-    
-</div> -->
 <div id="chats-div">
         
     <div class="search-container">
-        <input type="text" placeholder="Пошук чатів..." class="search-input">
+        <input type="text" id="chat-search" placeholder="Пошук чатів..." class="search-input">
     </div>
     
     {% if not my_group %}
         <div class="make_chat_button">
             <button id="open_modal_btn"> + Створити чат</button>
         </div>
-
+        
         <div id="create_chat-area" class="create_chat-area" style="display: none;">
             <form method="POST">
                 <input type="hidden" name="action" value="create_chat">
@@ -115,7 +70,7 @@
     <div class="chat-header-container">
         <h1 class="block-title main-title">Ваш чат</h1>
         {% if my_group %}
-            <button class="delete-chat-btn">
+            <button class="delete-chat-btn" id="delete-chat-btn">
                 <img src="{{ url_for('chat_page.static', filename='images/delete.png') }}" class="delete-icon" alt="delete">
             </button>
         {% endif %}
@@ -126,7 +81,7 @@
             <div class="saved_messages my-avatar">{{ my_group.group_name[:2].upper() }}</div>
             <div class="saved_messages_text">
                 <div class="saved_time_text">
-                    <h1 class="chat-name-heading font-bold">{{ my_group.group_name }}</h1>
+                    <h1 class="chat-name-heading font-bold chat-title">{{ my_group.group_name }}</h1>
                     <p id="saved_time">15m ago</p>
                 </div>
                 <p class="chat-subtext client-subtext">Ваш особистий створений чат</p>
@@ -152,7 +107,7 @@
                     
                     <div class="saved_messages_text">
                         <div class="saved_time_text">
-                            <h1 class="chat-name-heading font-medium">{{ group.group_name }}</h1>
+                            <h1 class="chat-name-heading font-medium chat-title">{{ group.group_name }}</h1>
                             <p id="saved_time">2m ago</p>
                         </div>
                         <p class="chat-subtext">Натисніть, щоб увійти до чату</p>
@@ -166,49 +121,6 @@
     
 </div>
     
-    <!-- <div id="chats-div">
-        
-        <div class="search-container">
-            <input type="text" placeholder="Пошук чатів..." class="search-input">
-        </div>
-        
-
-        <div class="make_chat_button">
-            <form method="POST">
-                <input type="hidden" name="action" value="create_chat">
-                <button id="create_chat" type="submit" > + Створити чат</button>
-            </form>
-        </div>
-        <div id="create_chat-area" class="create_chat-area">
-            <form method="POST">
-                <input type="text" placeholder="Введіть назву чату" class="create">
-            </form>
-            <button>create</button>
-        </div>
-        <div class="chat-header-container">
-            <h1 id="your_chat">Ваш Чат</h1>
-            <button class="delete-chat-btn">
-                <img src="{{ url_for('chat_page.static', filename='images/delete.png') }}" class="delete-icon" alt="delete">
-            </button>
-        </div>
-
-        <div class="your_chat">
-            <div class="saved_messages">SV</div>
-
-            <div class = 'saved_messages_text'>
-                <div class="saved_time_text">
-                    <h1 id="saved_messages_text">Saved Messages</h1>
-                    <p id="saved_time">15m ago</p>
-                </div>
-                
-                <p id="last_saved_text">Here you can write a text</p>
-            </div>
-            
-            
-        </div>
-        
-    
-    </div> -->
 
     <div id="messages-div">
     </div>
