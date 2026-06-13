@@ -10,12 +10,35 @@ def handle_chat_page(chat_id=None):
     if not flask_login.current_user.is_authenticated:
         return flask.redirect('/registration')
 
+    # Инициализируем базовое значение (по умолчанию запрашивать вход не нужно)
+    need_to_join = False
     
+    # Сразу получаем объект активного чата, если передан chat_id
+    active_chat = None
+    if chat_id:
+        active_chat = Groups.query.get(chat_id)
+        if not active_chat:
+            return flask.redirect('/chat/')
+        
+        # ЛОГИКА ПРОВЕРКИ ДОСТУПА:
+        # Если чат открыт, проверяем, есть ли текущий юзер в списке участников этой группы
+        if flask_login.current_user not in active_chat.users:
+            need_to_join = True
+
+    # ОБРАБОТКА POST ЗАПРОСОВ
     if flask.request.method == 'POST':
         action = flask.request.form.get("action")
 
-        
-        if action == "create_chat":
+        # 1. Действие: Вступление в группу
+        if action == "join_group" and active_chat:
+            if flask_login.current_user not in active_chat.users:
+                active_chat.users.append(flask_login.current_user)
+                DATABASE.session.commit()
+            # Перезагружаем страницу этого же чата, теперь need_to_join станет False
+            return flask.redirect(f'/chat/{chat_id}')
+
+        # 2. Действие: Создание чата
+        elif action == "create_chat":
             current_user_id = int(flask_login.current_user.id)
             existing_group = Groups.query.filter_by(owner_id=current_user_id).first()
             if existing_group:
@@ -32,7 +55,7 @@ def handle_chat_page(chat_id=None):
             DATABASE.session.commit()
             return flask.redirect('/chat/')
 
-        
+        # 3. Действие: Обновление профиля
         elif action == "update_profile":
             first_name = flask.request.form.get('first_name') or None
             last_name = flask.request.form.get('last_name') or None
@@ -55,7 +78,7 @@ def handle_chat_page(chat_id=None):
             DATABASE.session.commit()
             return flask.redirect('/chat/')
 
-        
+        # 4. Действие: Удаление чата
         elif action == "delete_chat":
             current_user_id = int(flask_login.current_user.id)
             chat_to_delete = Groups.query.filter_by(owner_id=current_user_id).first()
@@ -67,17 +90,11 @@ def handle_chat_page(chat_id=None):
             
             return flask.redirect('/chat/')
 
+    # ФОРМИРОВАНИЕ ДАННЫХ ДЛЯ ШАБЛОНА (GET-запрос)
     current_user_id = int(flask_login.current_user.id)
     my_group = Groups.query.filter_by(owner_id=current_user_id).first()
     other_groups = Groups.query.filter(Groups.owner_id != current_user_id).all()
-    
-    active_chat = None
-    if chat_id:
-        active_chat = Groups.query.get(chat_id)
-        if not active_chat:
-            return flask.redirect('/chat/')
 
-    
     if my_group is None:
         class EmptyGroup:
             id = None
@@ -94,5 +111,6 @@ def handle_chat_page(chat_id=None):
         my_group=template_my_group,  
         has_chat=has_chat,            
         other_groups=other_groups,
-        active_chat=active_chat
+        active_chat=active_chat,
+        need_to_join=need_to_join  # Отправляем флаг в HTML-шаблон
     )

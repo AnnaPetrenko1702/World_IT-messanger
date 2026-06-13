@@ -1,6 +1,6 @@
 import flask_socketio
 import flask
-from auth.models import Groups
+from auth.models import Groups , Message 
 from app.settings import app , socket
 from app.database import DATABASE
 import flask_login
@@ -40,3 +40,34 @@ def handle_join_room(data):
         print(f'Пользователь {user_id} вошёл в room_{group.id}')
     else:
         flask_socketio.emit('error', {'msg': 'нет доступа'})
+
+@socket.on('message')
+def handle_message_event(data):
+    group_id = data.get('group_id')
+    content = data.get('content', '').strip()
+    
+    if not content or not group_id:
+        return
+
+    # Получаем текущего пользователя через Flask-Login
+    # (Убедись, что у твоей модели User есть поле username или name)
+    current_user_name = flask_login.current_user.username 
+    current_user_id = flask_login.current_user.id
+
+    # 1. Логика One-to-Many: сохраняем сообщение в БД
+    # Если ты еще не добавил user_id в модель Message, можно пока просто сохранять,
+    # но для сокетов мы всё равно транслируем автора в реальном времени.
+    new_message = Message(content=content, group_id=int(group_id))
+    DATABASE.session.add(new_message)
+    DATABASE.session.commit()
+
+    # 2. Логика отправки: упаковываем автора и текст в один словарь
+    payload = {
+        'message': content,
+        'username': current_user_name,
+        'user_id': current_user_id,
+        'group_id': group_id
+    }
+
+    # Отправляем этот словарь всем, кто находится в этой комнате
+    flask_socketio.emit('message', payload, to=f'room_{group_id}')
