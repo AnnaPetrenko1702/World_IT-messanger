@@ -57,7 +57,7 @@ def handle_message_event(data):
     # 1. Логика One-to-Many: сохраняем сообщение в БД
     # Если ты еще не добавил user_id в модель Message, можно пока просто сохранять,
     # но для сокетов мы всё равно транслируем автора в реальном времени.
-    new_message = Message(content=content, group_id=int(group_id))
+    new_message = Message(content=content, group_id=int(group_id), user_id = current_user_id)
     DATABASE.session.add(new_message)
     DATABASE.session.commit()
 
@@ -67,6 +67,7 @@ def handle_message_event(data):
         'username': current_user_name,
         'user_id': current_user_id,
         'group_id': group_id
+        
     }
 
     # Отправляем этот словарь всем, кто находится в этой комнате

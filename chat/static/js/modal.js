@@ -58,10 +58,10 @@ document.addEventListener('DOMContentLoaded', function () {
             socket.emit('message', { content: inputValue, group_id: GROUP_ID });
             msgInput.value = '';
         }
-
+        
         // Слушатель клика по кнопке отправки
         sendBtn.addEventListener('click', SendMessage);
-
+        
         // ДОПОЛНЕНО: Слушатель нажатия клавиши Enter для отправки
         msgInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
@@ -74,12 +74,51 @@ document.addEventListener('DOMContentLoaded', function () {
     // Слушаем сервер и выводим сообщения
     socket.on('message', (data) => {
         if (data.group_id == GROUP_ID) {
-            console.log(`[Комната ${data.group_id}] Пользователь ${data.username} (ID: ${data.user_id}): ${data.message}`);
-            
-            // Тут в будущем будет твой код рендеринга сообщения на экран:
-            // appendMessageToUI(data); 
+            const messagesList = document.querySelector('.messages-list');
 
-            // ДОПОЛНЕНО: Скроллим вниз при получении нового сообщения
+            const isOwn = data.user_id == CURRENT_USER_ID;
+
+            // Строка сообщения
+            const row = document.createElement('div');
+            row.classList.add('message-row');
+            row.classList.add(isOwn ? 'message-out' : 'message-in');
+
+            // Аватар (буква имени)
+            const avatar = document.createElement('div');
+            avatar.classList.add('msg-avatar');
+            const displayName = isOwn ? 'You' : data.username;
+            avatar.textContent = (displayName || '?').slice(0, 1).toUpperCase();
+
+            // Обёртка с метой и текстом
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('msg-bubble-wrapper');
+
+            const meta = document.createElement('div');
+            meta.classList.add('msg-meta');
+
+            const author = document.createElement('span');
+            author.classList.add('msg-username');
+            author.textContent = displayName;
+
+            const time = document.createElement('span');
+            time.classList.add('msg-time');
+            const now = new Date();
+            time.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            meta.appendChild(author);
+            meta.appendChild(time);
+
+            const text = document.createElement('span');
+            text.classList.add('message-text');
+            text.textContent = data.message;
+
+            wrapper.appendChild(meta);
+            wrapper.appendChild(text);
+
+            row.appendChild(avatar);
+            row.appendChild(wrapper);
+
+            messagesList.appendChild(row);
             scrollToBottom();
         }
     });
@@ -106,17 +145,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     const openModalBtn = document.getElementById('open_modal_btn');
     const closeModalBtn = document.getElementById('close_modal_btn');
-    const createChatArea = document.getElementById('create_chat-area');
+    const createChatModal = document.getElementById('create_chat-modal');
+    const closeModalX = document.getElementById('close_modal_x');
 
-    if (openModalBtn && createChatArea) {
+
+
+    // Новый вариант (если используется create_chat-modal с оверлеем)
+    if (openModalBtn && createChatModal) {
         openModalBtn.addEventListener('click', function () {
-            createChatArea.style.display = 'block';
+            createChatModal.style.display = 'flex';
         });
     }
 
-    if (closeModalBtn && createChatArea) {
+    if (closeModalBtn && createChatModal) {
         closeModalBtn.addEventListener('click', function () {
-            createChatArea.style.display = 'none';
+            createChatModal.style.display = 'none';
+        });
+    }
+
+    if (closeModalX && createChatModal) {
+        closeModalX.addEventListener('click', function () {
+            createChatModal.style.display = 'none';
         });
     }
 
@@ -169,9 +218,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Закрытие окна удаления при клике в пустую область вокруг него
     window.addEventListener('click', function(event) {
-        if (event.target === deleteModal) {
+        if (deleteModal && event.target === deleteModal) {
             deleteModal.style.display = 'none';
+        }
+        if (createChatModal && event.target === createChatModal) {
+            createChatModal.style.display = 'none';
         }
     });
 
 });
+
+// ==========================================
+// НАСТРОЙКИ ПРОФИЛЯ
+// ==========================================
+const settingsBtn = document.getElementById('settings-btn');
+if (settingsBtn) {
+    settingsBtn.addEventListener('click', showSettings);
+}
+
+function showSettings(){
+    document.querySelector('.modal').style.display = 'flex'
+}
+
+const cancelModalBtn = document.getElementById('cancel-modal-btn');
+const closeModalBtnSettings = document.getElementById('close-modal-btn');
+
+if (cancelModalBtn) {
+    cancelModalBtn.addEventListener('click', closeSettings);
+}
+if (closeModalBtnSettings) {
+    closeModalBtnSettings.addEventListener('click', closeSettings);
+}
+
+function closeSettings(){
+    document.querySelector('.modal').style.display = 'none'
+}

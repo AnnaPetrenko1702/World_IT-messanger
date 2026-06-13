@@ -2,6 +2,7 @@ from app.database import DATABASE
 import flask_login
 
 
+
 class User(DATABASE.Model, flask_login.UserMixin):
     __tablename__ = 'user'
 
@@ -29,8 +30,7 @@ class Groups(DATABASE.Model):
     owner = DATABASE.relationship("User")
 
     users = DATABASE.relationship("User", secondary="user_group", back_populates="groups")
-    messages = DATABASE.relationship("Message", back_populates="groups")
-
+    messages = DATABASE.relationship("Message", back_populates="groups", cascade="all, delete-orphan")
 
 class UserGroup(DATABASE.Model):
     __tablename__ = 'user_group'
@@ -56,10 +56,7 @@ class Message(DATABASE.Model):
     group_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey('groups.id'), nullable=False)
 
     groups = DATABASE.relationship('Groups', back_populates='messages')
+    user_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey("user.id"), nullable = False)
+    author = DATABASE.relationship("User", backref = "message")
 
 
-# class MessageGroup(DATABASE.Model):
-#     __tablename__ = 'message_group'
-
-#     message_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey('message.id'), primary_key=True)
-#     group_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey('groups.id'), primary_key=True)
