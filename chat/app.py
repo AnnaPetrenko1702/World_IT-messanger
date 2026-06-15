@@ -5,3 +5,5 @@ chat_blueprint = flask.Blueprint(name = 'chat_page',
                                 template_folder = 'templates',
                                 static_folder = 'static',
                                 static_url_path = '/chat/static')
+
+online_users = {}

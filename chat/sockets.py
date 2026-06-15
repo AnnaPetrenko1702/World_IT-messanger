@@ -4,13 +4,41 @@ from auth.models import Groups , Message
 from app.settings import app , socket
 from app.database import DATABASE
 import flask_login
+from .app import online_users
+
 
 @socket.on('connect')
 def handle_connect():
     print('Connected')
+    user_id = flask_login.current_user.id
 
+    if user_id in online_users:
+        online_users[user_id].add(flask.request.sid)
+    else:
+        online_users[user_id] = set()
+        online_users[user_id].add(flask.request.sid)
 
+    group = Groups.query.get(1)
+    if group:
+        data = {
+            "title" : group.group_name,
+            "members" : []
+        }
 
+        users = group.users
+
+        for user in users:
+            if user.id in online_users.keys():
+                status = "online"
+            else:
+                status = "offline"
+            data["members"].append({
+                "status" : status,
+                "email" : user.email,
+            })
+        print(12366666666666666)
+        
+        flask_socketio.emit('group_status', data)
 @socket.on('disconnect')
 def handle_connect():
     print('Disconnected')

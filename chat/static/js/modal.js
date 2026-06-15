@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     socket.on('connect', () => {
         console.log('Connected');
+        
     });
 
     socket.on('disconnect', () => {
@@ -20,7 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
     socket.on('error', (data) => {
         console.log('Ошибка сокета:', data.msg);
     });
-
+    socket.on('group_status', (data) => {
+        console.log(data);
+    });
+    
     // Извлекаем ID комнаты из URL
     const urlParts = window.location.pathname.split('/');
     const GROUP_ID = urlParts[urlParts.length - 1];
@@ -126,20 +130,46 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 3. ПЕРЕХОД ПО ЧАТАМ (ВХОД В КОМНАТУ)
     // ==========================================
+
+    const chatsDiv = document.getElementById('chats-div')
+    const messagesDiv = document.getElementById('messages-div')
+    const membersDiv = document.getElementById('members-div')
+    document.querySelector('.logo-area').addEventListener('click', ()=>{
+        messagesDiv.classList.remove('active');
+        chatsDiv.classList.add('active');
+        membersDiv.classList.remove('active');
+    })
+
     document.querySelectorAll('.chat-link').forEach(link => {
         link.addEventListener('click', function(event) {
-            event.preventDefault();  // Останавливаем моментальный переход
-
-            const groupId = this.dataset.groupId;  // Берём из data-атрибута
-            console.log('Clicking chat, groupId:', groupId);
-
-            socket.emit('join_room', { groupId: groupId });  
-
-            // Перенаправляем пользователя
+            event.preventDefault();
+            sessionStorage.setItem('showMessages', '1'); // запоминаем
             window.location.href = this.href;
         });
     });
 
+    // При загрузке страницы — проверяем флаг
+    if (sessionStorage.getItem('showMessages') === '1') {
+        sessionStorage.removeItem('showMessages');
+        messagesDiv.classList.add('active');
+        chatsDiv.classList.remove('active');
+        membersDiv.classList.remove('active');
+    }
+    document.getElementById('group-name-link').addEventListener('click', ()=>{
+        messagesDiv.classList.remove('active');
+        chatsDiv.classList.remove('active');
+        membersDiv.classList.add('active');
+    })
+    document.getElementById('arrow-messages').addEventListener('click', ()=>{
+        messagesDiv.classList.remove('active');
+        chatsDiv.classList.add('active');
+        membersDiv.classList.remove('active');
+    })
+    document.getElementById('arrow-members').addEventListener('click', ()=>{
+        messagesDiv.classList.add('active');
+        chatsDiv.classList.remove('active');
+        membersDiv.classList.remove('active');
+    })
     // ==========================================
     // 4. МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ЧАТА
     // ==========================================
@@ -253,3 +283,38 @@ if (closeModalBtnSettings) {
 function closeSettings(){
     document.querySelector('.modal').style.display = 'none'
 }
+document.addEventListener('DOMContentLoaded', () => {
+    const members = document.querySelectorAll('.member');
+    const profileBlock = document.getElementById('profile');
+    
+    // Элементы внутри блока профиля, куда будем подставлять инфу
+    const profileLetters = document.getElementById('profile-letters');
+    const profileFullname = document.getElementById('profile-fullname');
+    const profileUsername = document.getElementById('profile-username');
+    const closeBtn = document.getElementById('close-profile-btn');
+
+    // Навешиваем событие клика на каждого пользователя в списке
+    members.forEach(member => {
+        member.addEventListener('click', () => {
+            // Достаем данные из кликнутого элемента
+            const username = member.getAttribute('data-username');
+            const fullname = member.getAttribute('data-fullname');
+            const initials = member.getAttribute('data-initials');
+
+            // Подставляем данные в блок профиля
+            profileLetters.textContent = initials || 'CH';
+            profileFullname.textContent = fullname.trim() ? fullname : 'Без имени';
+            profileUsername.textContent = `@${username}`;
+
+            profileBlock.style.display = 'block'; 
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            profileBlock.style.style.display = 'none';
+        });
+    }
+});
+
