@@ -25,6 +25,17 @@
     <div class="registration-container">
 
         <p class="field-label">Введіть вашу електронну пошту нижче, щоб створити обліковий запис</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
         <form method="POST">
             <input type="email" name="email" placeholder="name@example.com" required />
 

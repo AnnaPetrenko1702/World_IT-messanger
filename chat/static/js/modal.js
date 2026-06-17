@@ -1,13 +1,18 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const chatsDiv = document.getElementById('chats-div');
+    const messagesDiv = document.getElementById('messages-div');
+    const membersDiv = document.getElementById('members-div');
+    const logoArea = document.querySelector('.logo-area');
+    const groupNameLink = document.getElementById('group-name-link');
+    const arrowMessages = document.getElementById('arrow-messages');
+    const arrowMembers = document.getElementById('arrow-members');
 
-    // ==========================================
     // 1. ИНИЦИАЛИЗАЦИЯ SOCKET.IO
-    // ==========================================
+
     const socket = io();
 
     socket.on('connect', () => {
         console.log('Connected');
-        
     });
 
     socket.on('disconnect', () => {
@@ -21,55 +26,95 @@ document.addEventListener('DOMContentLoaded', function () {
     socket.on('error', (data) => {
         console.log('Ошибка сокета:', data.msg);
     });
-    socket.on('group_status', (data) => {
-        console.log(data);
+
+    socket.on('display_status', (data) => {
+        const members = data.members;
+        const membersListDiv = membersDiv.querySelector('.members-list'); 
+        membersListDiv.innerHTML = '';
+
+        let amountMembers = 0;
+        let amountOnlineMembers = 0;
+
+        members.forEach((member) => {
+            const memberDiv = document.createElement('div');
+            amountMembers = amountMembers + 1;
+            memberDiv.classList.add('member');
+            memberDiv.style.cursor = 'pointer';
+            memberDiv.dataset.username = member.username;
+            memberDiv.dataset.fullname = `${member.first_name || ''} ${member.last_name || ''}`;
+            memberDiv.dataset.initials = `${(member.first_name || '').slice(0, 1)}${(member.last_name || '').slice(0, 1)}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('members-avatar');
+            avatarDiv.style.backgroundColor = `rgb(${member.color_r}, ${member.color_g}, ${member.color_b})`;
+
+            const lettersDiv = document.createElement('div');
+            lettersDiv.id = 'letters';
+            lettersDiv.textContent = memberDiv.dataset.initials;
+            avatarDiv.appendChild(lettersDiv);
+
+            const statusDiv = document.createElement('div');
+            if (member.status === 'online') {
+                statusDiv.classList.add('status'); 
+                amountOnlineMembers = amountOnlineMembers + 1;
+            }
+
+            const usernameP = document.createElement('p');
+            usernameP.id = 'username_right';
+            usernameP.textContent = member.username;
+
+            memberDiv.appendChild(avatarDiv);
+            memberDiv.appendChild(statusDiv);
+            memberDiv.appendChild(usernameP);
+            membersListDiv.appendChild(memberDiv);
+        });
+
+        const membersCount = document.querySelector('.members-count');
+        if (membersCount) {
+            membersCount.textContent = `${amountMembers} пользователя, ${amountOnlineMembers} online`;
+        }
     });
-    
-    // Извлекаем ID комнаты из URL
+
     const urlParts = window.location.pathname.split('/');
     const GROUP_ID = urlParts[urlParts.length - 1];
 
-    // Находим элементы интерфейса сообщений
     const sendBtn = document.getElementById('send-button');
     const msgInput = document.getElementById('message-input');
     const messagesDisplay = document.getElementById('chat-messages-display');
 
-    // Функция автоматического скролла вниз
+
     function scrollToBottom() {
         if (messagesDisplay) {
             messagesDisplay.scrollTop = messagesDisplay.scrollHeight;
         }
     }
 
-    // Сразу скроллим вниз при загрузке страницы, если мы внутри чата
+
     scrollToBottom();
 
-    // ==========================================
+
     // 2. ЛОГИКА ОТПРАВКИ И ПРИЕМА СООБЩЕНИЙ
-    // ==========================================
-    // ДОПОЛНЕНО: Добавлена проверка && msgInput. 
-    // Если висит окно "Приєднатися", сокет не будет слать join_room и вызывать ошибку доступа.
+
     if (GROUP_ID && !isNaN(GROUP_ID) && msgInput) {
         
-        // Подключаемся к комнате на сервере
+        
         socket.emit('join_room', { groupId: parseInt(GROUP_ID) });
 
         function SendMessage() {
             const inputValue = msgInput.value.trim();
+            
             if (!inputValue) return;
 
-            // Отправляем сообщение вместе с ID текущей комнаты
+            
             socket.emit('message', { content: inputValue, group_id: GROUP_ID });
             msgInput.value = '';
         }
         
-        // Слушатель клика по кнопке отправки
-        sendBtn.addEventListener('click', SendMessage);
+        if (sendBtn) sendBtn.addEventListener('click', SendMessage);
         
-        // ДОПОЛНЕНО: Слушатель нажатия клавиши Enter для отправки
         msgInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
-                event.preventDefault(); // Предотвращаем перенос строки в input
+                event.preventDefault(); 
                 SendMessage();
             }
         });
@@ -79,21 +124,18 @@ document.addEventListener('DOMContentLoaded', function () {
     socket.on('message', (data) => {
         if (data.group_id == GROUP_ID) {
             const messagesList = document.querySelector('.messages-list');
+            if (!messagesList) return;
 
             const isOwn = data.user_id == CURRENT_USER_ID;
 
-            // Строка сообщения
             const row = document.createElement('div');
-            row.classList.add('message-row');
-            row.classList.add(isOwn ? 'message-out' : 'message-in');
+            row.classList.add('message-row', isOwn ? 'message-out' : 'message-in');
 
-            // Аватар (буква имени)
             const avatar = document.createElement('div');
             avatar.classList.add('msg-avatar');
             const displayName = isOwn ? 'You' : data.username;
             avatar.textContent = (displayName || '?').slice(0, 1).toUpperCase();
 
-            // Обёртка с метой и текстом
             const wrapper = document.createElement('div');
             wrapper.classList.add('msg-bubble-wrapper');
 
@@ -127,60 +169,66 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ==========================================
-    // 3. ПЕРЕХОД ПО ЧАТАМ (ВХОД В КОМНАТУ)
-    // ==========================================
 
-    const chatsDiv = document.getElementById('chats-div')
-    const messagesDiv = document.getElementById('messages-div')
-    const membersDiv = document.getElementById('members-div')
-    document.querySelector('.logo-area').addEventListener('click', ()=>{
-        messagesDiv.classList.remove('active');
-        chatsDiv.classList.add('active');
-        membersDiv.classList.remove('active');
-    })
+    // 3. ПЕРЕХОД ПО ЧАТАМ И АКТИВАЦИЯ ПАНЕЛЕЙ
+
+
+
+    if (logoArea && messagesDiv && chatsDiv && membersDiv) {
+        logoArea.addEventListener('click', () => {
+            messagesDiv.classList.remove('active');
+            chatsDiv.classList.add('active');
+            membersDiv.classList.remove('active');
+        });
+    }
 
     document.querySelectorAll('.chat-link').forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault();
-            sessionStorage.setItem('showMessages', '1'); // запоминаем
+            sessionStorage.setItem('showMessages', '1'); 
             window.location.href = this.href;
         });
     });
 
-    // При загрузке страницы — проверяем флаг
-    if (sessionStorage.getItem('showMessages') === '1') {
+    if (sessionStorage.getItem('showMessages') === '1' && messagesDiv && chatsDiv && membersDiv) {
         sessionStorage.removeItem('showMessages');
         messagesDiv.classList.add('active');
         chatsDiv.classList.remove('active');
         membersDiv.classList.remove('active');
     }
-    document.getElementById('group-name-link').addEventListener('click', ()=>{
-        messagesDiv.classList.remove('active');
-        chatsDiv.classList.remove('active');
-        membersDiv.classList.add('active');
-    })
-    document.getElementById('arrow-messages').addEventListener('click', ()=>{
-        messagesDiv.classList.remove('active');
-        chatsDiv.classList.add('active');
-        membersDiv.classList.remove('active');
-    })
-    document.getElementById('arrow-members').addEventListener('click', ()=>{
-        messagesDiv.classList.add('active');
-        chatsDiv.classList.remove('active');
-        membersDiv.classList.remove('active');
-    })
-    // ==========================================
-    // 4. МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ЧАТА
-    // ==========================================
+
+    if (groupNameLink && messagesDiv && chatsDiv && membersDiv) {
+        groupNameLink.addEventListener('click', () => {
+            messagesDiv.classList.remove('active');
+            chatsDiv.classList.remove('active');
+            membersDiv.classList.add('active');
+        });
+    }
+
+    if (arrowMessages && messagesDiv && chatsDiv && membersDiv) {
+        arrowMessages.addEventListener('click', () => {
+            messagesDiv.classList.remove('active');
+            chatsDiv.classList.add('active');
+            membersDiv.classList.remove('active');
+        });
+    }
+
+    if (arrowMembers && messagesDiv && chatsDiv && membersDiv) {
+        arrowMembers.addEventListener('click', () => {
+            messagesDiv.classList.add('active');
+            chatsDiv.classList.remove('active');
+            membersDiv.classList.remove('active');
+        });
+    }
+
+
+    // 4. МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ЧАТА 
+
     const openModalBtn = document.getElementById('open_modal_btn');
     const closeModalBtn = document.getElementById('close_modal_btn');
     const createChatModal = document.getElementById('create_chat-modal');
     const closeModalX = document.getElementById('close_modal_x');
 
-
-
-    // Новый вариант (если используется create_chat-modal с оверлеем)
     if (openModalBtn && createChatModal) {
         openModalBtn.addEventListener('click', function () {
             createChatModal.style.display = 'flex';
@@ -199,9 +247,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
+
     // 5. ЖИВОЙ ПОИСК ЧАТОВ
-    // ==========================================
+
     const searchInput = document.getElementById('chat-search');
     
     if (searchInput) {
@@ -213,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const titleElement = chat.querySelector('.chat-title');
                 if (titleElement) {
                     const chatName = titleElement.textContent.toLowerCase();
-
                     if (chatName.startsWith(filter)) {
                         chat.style.display = 'flex'; 
                     } else {
@@ -224,9 +271,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
+
     // 6. МОДАЛЬНОЕ ОКНО УДАЛЕНИЯ ЧАТА
-    // ==========================================
+
     const deleteBtn = document.querySelector('.delete-chat-btn');
     const deleteModal = document.getElementById('delete-confirm-modal');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
@@ -235,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
         deleteBtn.addEventListener('click', function(event) {
             event.preventDefault();  
             event.stopPropagation(); 
-            
             deleteModal.style.display = 'flex'; 
         });
     }
@@ -246,7 +292,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Закрытие окна удаления при клике в пустую область вокруг него
     window.addEventListener('click', function(event) {
         if (deleteModal && event.target === deleteModal) {
             deleteModal.style.display = 'none';
@@ -256,65 +301,56 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-});
 
-// ==========================================
-// НАСТРОЙКИ ПРОФИЛЯ
-// ==========================================
-const settingsBtn = document.getElementById('settings-btn');
-if (settingsBtn) {
-    settingsBtn.addEventListener('click', showSettings);
-}
+    // 7. НАСТРОЙКИ ПРОФИЛЯ
 
-function showSettings(){
-    document.querySelector('.modal').style.display = 'flex'
-}
+    const settingsBtn = document.getElementById('settings-btn');
+    const cancelModalBtn = document.getElementById('cancel-modal-btn');
+    const closeModalBtnSettings = document.getElementById('close-modal-btn');
+    const settingsModal = document.querySelector('.modal');
 
-const cancelModalBtn = document.getElementById('cancel-modal-btn');
-const closeModalBtnSettings = document.getElementById('close-modal-btn');
+    if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+    }
 
-if (cancelModalBtn) {
-    cancelModalBtn.addEventListener('click', closeSettings);
-}
-if (closeModalBtnSettings) {
-    closeModalBtnSettings.addEventListener('click', closeSettings);
-}
+    function closeSettings() {
+        if (settingsModal) settingsModal.style.display = 'none';
+    }
 
-function closeSettings(){
-    document.querySelector('.modal').style.display = 'none'
-}
-document.addEventListener('DOMContentLoaded', () => {
+    if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeSettings);
+    if (closeModalBtnSettings) closeModalBtnSettings.addEventListener('click', closeSettings);
+
+
+    // 8. КЛИК ПО УЧАСТНИКАМ (ПРОФИЛЬ ВНИЗУ)
+
     const members = document.querySelectorAll('.member');
     const profileBlock = document.getElementById('profile');
     
-    // Элементы внутри блока профиля, куда будем подставлять инфу
     const profileLetters = document.getElementById('profile-letters');
     const profileFullname = document.getElementById('profile-fullname');
     const profileUsername = document.getElementById('profile-username');
     const closeBtn = document.getElementById('close-profile-btn');
 
-    // Навешиваем событие клика на каждого пользователя в списке
     members.forEach(member => {
         member.addEventListener('click', () => {
-            // Достаем данные из кликнутого элемента
             const username = member.getAttribute('data-username');
             const fullname = member.getAttribute('data-fullname');
             const initials = member.getAttribute('data-initials');
 
-            // Подставляем данные в блок профиля
-            profileLetters.textContent = initials || 'CH';
-            profileFullname.textContent = fullname.trim() ? fullname : 'Без имени';
-            profileUsername.textContent = `@${username}`;
+            if (profileLetters) profileLetters.textContent = initials || 'CH';
+            if (profileFullname) profileFullname.textContent = fullname.trim() ? fullname : 'Без имени';
+            if (profileUsername) profileUsername.textContent = `@${username}`;
 
-            profileBlock.style.display = 'block'; 
+            if (profileBlock) profileBlock.style.display = 'flex'; 
         });
     });
 
-    if (closeBtn) {
+    if (closeBtn && profileBlock) {
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation(); 
-            profileBlock.style.style.display = 'none';
+            profileBlock.style.display = 'none'; 
         });
     }
 });
-

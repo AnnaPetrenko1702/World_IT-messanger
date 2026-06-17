@@ -10,7 +10,7 @@ from flask import session
 
 def registration_view():
 
-    if flask_login.current_user.is_authenticated:
+    if flask_login.current_user.is_authenticated and flask_login.current_user.is_verified:
         return flask.redirect('/')
 
     if flask.request.method == 'POST':
@@ -23,6 +23,11 @@ def registration_view():
             hashed_password = security.generate_password_hash(password)
 
             if password and email and len(password) >= 8:
+                existing_user = User.query.filter_by(email=email).first()
+                if existing_user:
+                    flask.flash("Пользователь с такой почтой уже зарегистрирован!", "error")
+                    print(123)
+                    return flask.render_template("registration.html") 
                 user = User(password_hash=hashed_password, email=email)
         
                 DATABASE.session.add(user)
@@ -47,7 +52,7 @@ def registration_view():
                                     </div>
                                     
                                     <div style="background:#ffffff; padding:0 32px 24px; text-align:center;">
-                                        <img src="https://i.ibb.co/cKDbr7KX/photo-2026-06-09-23-02-37.jpg" alt="World IT illustration" style="width:100%; max-width:500px; border-none; border-radius:16px; display:block; margin:0 auto;" />
+                                        <img src="{{ url_for('registration.static', filename='images/world_it.svg')}}" alt="World IT illustration" style="width:100%; max-width:500px; border-none; border-radius:16px; display:block; margin:0 auto;" />
                                     </div>
                                     
                                     <div style="padding:0 32px 36px; text-align:center; color:#6b7280; font-size:14px; line-height:1.7;">
@@ -72,11 +77,15 @@ def registration_view():
                     smtp.send_message(email_msg)
                 session['email'] = email
                 return flask.redirect('/confirm_page')
+        else:
+            flask.flash("Пользователь с такой почтой уже зарегистрирован!", "error")
+            print(123)
+            return flask.render_template("registration.html") 
 
     return flask.render_template('registration.html')
 
 def confirm_email_view():
-    if flask_login.current_user.is_authenticated:
+    if flask_login.current_user.is_authenticated and flask_login.current_user.is_verified:
         return flask.redirect('/')
     email = flask.request.args.get('email')
     if not email:
@@ -94,7 +103,7 @@ def confirm_email_view():
     return flask.redirect('/')
     
 def auth_view():
-    if flask_login.current_user.is_authenticated:
+    if flask_login.current_user.is_authenticated and flask_login.current_user.is_verified:
         return flask.redirect('/')
     if flask.request.method == 'POST':
 
@@ -111,7 +120,7 @@ def auth_view():
     return flask.render_template('auth.html')
 
 def confirm_email_page():
-    if flask_login.current_user.is_authenticated:
+    if flask_login.current_user.is_authenticated and flask_login.current_user.is_verified:
         return flask.redirect('/')
     email = session.get('email')
     if email:

@@ -16,7 +16,9 @@ class User(DATABASE.Model, flask_login.UserMixin):
     gender = DATABASE.Column(DATABASE.String)
     birth_date = DATABASE.Column(DATABASE.Date)
     is_verified = DATABASE.Column(DATABASE.Boolean, default=False)
-
+    color_r = DATABASE.Column(DATABASE.Integer, default=0)
+    color_g = DATABASE.Column(DATABASE.Integer, default=0)
+    color_b = DATABASE.Column(DATABASE.Integer, default=255)
     groups = DATABASE.relationship("Groups", secondary="user_group", back_populates="users")
 
 
@@ -31,7 +33,17 @@ class Groups(DATABASE.Model):
 
     users = DATABASE.relationship("User", secondary="user_group", back_populates="groups")
     messages = DATABASE.relationship("Message", back_populates="groups", cascade="all, delete-orphan")
-
+    color_r = DATABASE.Column(DATABASE.Integer, default=0)
+    color_g = DATABASE.Column(DATABASE.Integer, default=0)
+    color_b = DATABASE.Column(DATABASE.Integer, default=255)
+    @property
+    def last_message(self):
+        # Если сообщений в группе нет, сразу возвращаем None
+        if not self.messages:
+            return None
+        # Сортируем список сообщений по их id в обратном порядке и берем первое
+        return sorted(self.messages, key=lambda msg: msg.id, reverse=True)[0]
+    
 class UserGroup(DATABASE.Model):
     __tablename__ = 'user_group'
 

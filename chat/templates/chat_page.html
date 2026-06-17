@@ -30,7 +30,7 @@
                 <img src="{{ url_for('chat_page.static', filename='images/settings.png') }}" alt="Settings" class="header-icon">
             </button>
             
-            <div class="user-avatar" id="header_pp">
+            <div class="user-avatar" id="header_pp" style="background-color: rgb({{ user.color_r }}, {{ user.color_g }}, {{ user.color_b }});">
                 {{ (user.first_name[:1] if user.first_name else '') ~
                     (user.last_name[:1] if user.last_name else '') }}
             </div>
@@ -99,7 +99,7 @@
                 
                 <a href="/chat/{{ my_group.id }}" class="chat-link" data-group-id="{{ my_group.id }}">
                     <div class="your_chat owned-chat {% if active_chat and active_chat.id == my_group.id %}active-chat-style{% endif %}" style="padding-right: 60px;"> 
-                        <div class="saved_messages my-avatar">
+                        <div class="group-avatar" style="background-color: rgb({{ my_group.color_r }}, {{ my_group.color_g }}, {{ my_group.color_b }});">
                             {% if my_group.group_name %}{{ my_group.group_name[:2].upper() }}{% else %}CH{% endif %}
                         </div>
                         <div class="saved_messages_text">
@@ -107,7 +107,7 @@
                                 <h1 class="chat-name-heading font-bold chat-title">{{ my_group.group_name }}</h1>
                                 <p id="saved_time">15m ago</p>
                             </div>
-                            <p class="chat-subtext client-subtext">Ваш особистий створений чат</p>
+                            <p class="chat-subtext client-subtext">{{my_group.last_message.author.username}}: {{ my_group.last_message.content if my_group.last_message else 'Нет сообщений' }}</p>
                         </div>
                     </div>
                 </a>
@@ -134,7 +134,7 @@
                 {% for group in other_groups %}
                     <a href="/chat/{{ group.id }}" class="chat-link"  data-group-id="{{ group.id }}">
                         <div class="your_chat {% if active_chat and active_chat.id == group.id %}active-chat-style{% endif %}">
-                            <div class="saved_messages other-avatar">
+                            <div class="group-avatar" style="background-color: rgb({{ group.color_r }}, {{ group.color_g }}, {{ group.color_b }});">
                                 {% if group.group_name %}{{ group.group_name[:2].upper() }}{% else %}CH{% endif %}
                             </div>
                             
@@ -143,7 +143,7 @@
                                     <h1 class="chat-name-heading font-medium chat-title">{{ group.group_name }}</h1>
                                     <p id="saved_time">2m ago</p>
                                 </div>
-                                <p class="chat-subtext">Натисніть, щоб увійти до чату</p>
+                                <p class="chat-subtext">{{group.last_message.author.username}}: {{ group.last_message.content if group.last_message else 'Нет сообщений' }}</p>
                             </div>
                         </div>
                     </a>
@@ -209,7 +209,7 @@
                             <div class="message-row {% if msg.user_id == user.id %}message-out{% else %}message-in{% endif %}">
 
                                 <!-- Аватар теперь для ВСЕХ сообщений -->
-                                <div class="msg-avatar">
+                                <div class="msg-avatar" style="background-color: rgb({{ msg.author.color_r }}, {{ msg.author.color_g }}, {{ msg.author.color_b }});">
                                     {% if msg.user_id == user.id %}{{ user.username[:1].upper() }}{% else %}{{ msg.author.username[:1].upper() }}{% endif %}
                                 </div>
 
@@ -256,23 +256,15 @@
             <img src="{{url_for('chat_page.static', filename='images/arrow.png')}}" alt="arrow" id="arrow-members">
             <h1>Користувачі</h1>
         </header>
+        <div class="members-count" style="margin-top: 1px; font-size: 14px; color: #666;">
+            
+        </div>
+            
+        
     <div>
-        {% for member in active_chat.users %}
-            <div class="member" 
-                style="cursor: pointer;"
-                data-username="{{ member.username }}"
-                data-fullname="{{ member.first_name or '' }} {{ member.last_name or '' }}"
-                data-initials="{{ (member.first_name[:1] if member.first_name else '') ~ (member.last_name[:1] if member.last_name else '') }}">
-                
-                <div class="members-avatar">
-                    <div id="letters">
-                        {{ (member.first_name[:1] if member.first_name else '') ~ (member.last_name[:1] if member.last_name else '') }}
-                    </div>
-                </div>
-                <div class="status"></div>
-                <p id="username_right">{{ member.username }}</p>
-            </div>
-        {% endfor %}
+        <div class="members-list">
+            
+        </div>
     </div>
 
     <div id="profile" style="display: none;">
@@ -309,8 +301,8 @@
             
             <div class="profile-image-section">
                 <h3>Зображення профілю</h3>
-                <div class="avatar-block">
-                    <div class="avatar-circle">
+                <div class="avatar-block" >
+                    <div class="avatar-circle" style="background-color: rgb({{ user.color_r }}, {{ user.color_g }}, {{ user.color_b }});">
                         {{ (user.first_name[:1] if user.first_name else '') ~
                             (user.last_name[:1] if user.last_name else '') }}
                     </div>

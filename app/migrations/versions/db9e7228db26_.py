@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: d9c3a7d73349
+Revision ID: db9e7228db26
 Revises: 
-Create Date: 2026-06-13 18:55:50.161270
+Create Date: 2026-06-17 21:40:39.775320
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd9c3a7d73349'
+revision = 'db9e7228db26'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,6 +29,9 @@ def upgrade():
     sa.Column('gender', sa.String(), nullable=True),
     sa.Column('birth_date', sa.Date(), nullable=True),
     sa.Column('is_verified', sa.Boolean(), nullable=True),
+    sa.Column('color_r', sa.Integer(), nullable=True),
+    sa.Column('color_g', sa.Integer(), nullable=True),
+    sa.Column('color_b', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
@@ -37,6 +40,9 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('group_name', sa.String(), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
+    sa.Column('color_r', sa.Integer(), nullable=True),
+    sa.Column('color_g', sa.Integer(), nullable=True),
+    sa.Column('color_b', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('group_name')

@@ -4,7 +4,11 @@ import flask
 import flask_login
 from app.database import DATABASE
 from auth.models import Groups, User
+import random
 
+color_r_list = [80, 255,  75, 255,  64, 230, 226,   0, 170, 220]
+color_g_list = [200, 127,   0, 215, 224, 230, 114,   0, 240,  20]
+color_b_list = [120,  80, 130,   0, 208, 250,  91, 128, 209,  60]
 def handle_chat_page(chat_id=None):
     
     if not flask_login.current_user.is_authenticated:
@@ -12,6 +16,7 @@ def handle_chat_page(chat_id=None):
 
     # Инициализируем базовое значение (по умолчанию запрашивать вход не нужно)
     need_to_join = False
+    
     
     # Сразу получаем объект активного чата, если передан chat_id
     active_chat = None
@@ -49,7 +54,7 @@ def handle_chat_page(chat_id=None):
                 user_name = flask_login.current_user.username or f"User{current_user_id}"
                 chosen_name = f"Group {user_name} #{random.randint(1000, 9999)}"
 
-            group = Groups(group_name=chosen_name, owner_id=current_user_id)
+            group = Groups(group_name=chosen_name, owner_id=current_user_id, color_r=random.choice(color_r_list), color_g=random.choice(color_g_list), color_b=random.choice(color_b_list))
             group.users.append(flask_login.current_user)
             DATABASE.session.add(group)
             DATABASE.session.commit()
@@ -63,11 +68,19 @@ def handle_chat_page(chat_id=None):
             gender = flask.request.form.get('gender')
             birth_date_str = flask.request.form.get('birth_date')
             birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date() if birth_date_str else None
+            
+                    
 
             flask_login.current_user.first_name = first_name
             flask_login.current_user.last_name = last_name
             flask_login.current_user.gender = gender
             flask_login.current_user.birth_date = birth_date
+            if flask_login.current_user.color_r is None or flask_login.current_user.color_r == 0:
+                random_index = random.randint(0, len(color_r_list) - 1)
+                flask_login.current_user.color_r = color_r_list[random_index]
+                flask_login.current_user.color_g = color_g_list[random_index]
+                flask_login.current_user.color_b = color_b_list[random_index]
+            
 
             user = User.query.filter_by(username=username).first()
             if user and user.id != flask_login.current_user.id:
