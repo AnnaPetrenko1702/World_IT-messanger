@@ -95,8 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 2. ЛОГИКА ОТПРАВКИ И ПРИЕМА СООБЩЕНИЙ
 
+    
     if (GROUP_ID && !isNaN(GROUP_ID) && msgInput) {
-        
         
         socket.emit('join_room', { groupId: parseInt(GROUP_ID) });
 
@@ -105,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
             
             if (!inputValue) return;
 
-            
             socket.emit('message', { content: inputValue, group_id: GROUP_ID });
             msgInput.value = '';
         }
@@ -133,8 +132,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const avatar = document.createElement('div');
             avatar.classList.add('msg-avatar');
+            
+            // ДОПИСАНО: Динамически красим аватарку в реальном времени из данных сокета
+            avatar.style.backgroundColor = `rgb(${data.color_r || 128}, ${data.color_g || 128}, ${data.color_b || 128})`;
+
             const displayName = isOwn ? 'You' : data.username;
-            avatar.textContent = (displayName || '?').slice(0, 1).toUpperCase();
+            
+            // ИСПРАВЛЕНО: Берем первую букву реального юзернейма, а не слова "You"
+            avatar.textContent = (data.username || '?').slice(0, 1).toUpperCase();
 
             const wrapper = document.createElement('div');
             wrapper.classList.add('msg-bubble-wrapper');
@@ -169,107 +174,106 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
-    // 3. ПЕРЕХОД ПО ЧАТАМ И АКТИВАЦИЯ ПАНЕЛЕЙ
-
+        // 3. ПЕРЕХОД ПО ЧАТАМ И АКТИВАЦИЯ ПАНЕЛЕЙ
 
 
-    if (logoArea && messagesDiv && chatsDiv && membersDiv) {
-        logoArea.addEventListener('click', () => {
-            messagesDiv.classList.remove('active');
-            chatsDiv.classList.add('active');
-            membersDiv.classList.remove('active');
+
+        if (logoArea && messagesDiv && chatsDiv && membersDiv) {
+            logoArea.addEventListener('click', () => {
+                messagesDiv.classList.remove('active');
+                chatsDiv.classList.add('active');
+                membersDiv.classList.remove('active');
+            });
+        }
+
+        document.querySelectorAll('.chat-link').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                sessionStorage.setItem('showMessages', '1'); 
+                window.location.href = this.href;
+            });
         });
-    }
 
-    document.querySelectorAll('.chat-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
-            sessionStorage.setItem('showMessages', '1'); 
-            window.location.href = this.href;
-        });
-    });
-
-    if (sessionStorage.getItem('showMessages') === '1' && messagesDiv && chatsDiv && membersDiv) {
-        sessionStorage.removeItem('showMessages');
-        messagesDiv.classList.add('active');
-        chatsDiv.classList.remove('active');
-        membersDiv.classList.remove('active');
-    }
-
-    if (groupNameLink && messagesDiv && chatsDiv && membersDiv) {
-        groupNameLink.addEventListener('click', () => {
-            messagesDiv.classList.remove('active');
-            chatsDiv.classList.remove('active');
-            membersDiv.classList.add('active');
-        });
-    }
-
-    if (arrowMessages && messagesDiv && chatsDiv && membersDiv) {
-        arrowMessages.addEventListener('click', () => {
-            messagesDiv.classList.remove('active');
-            chatsDiv.classList.add('active');
-            membersDiv.classList.remove('active');
-        });
-    }
-
-    if (arrowMembers && messagesDiv && chatsDiv && membersDiv) {
-        arrowMembers.addEventListener('click', () => {
+        if (sessionStorage.getItem('showMessages') === '1' && messagesDiv && chatsDiv && membersDiv) {
+            sessionStorage.removeItem('showMessages');
             messagesDiv.classList.add('active');
             chatsDiv.classList.remove('active');
             membersDiv.classList.remove('active');
-        });
-    }
+        }
 
-
-    // 4. МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ЧАТА 
-
-    const openModalBtn = document.getElementById('open_modal_btn');
-    const closeModalBtn = document.getElementById('close_modal_btn');
-    const createChatModal = document.getElementById('create_chat-modal');
-    const closeModalX = document.getElementById('close_modal_x');
-
-    if (openModalBtn && createChatModal) {
-        openModalBtn.addEventListener('click', function () {
-            createChatModal.style.display = 'flex';
-        });
-    }
-
-    if (closeModalBtn && createChatModal) {
-        closeModalBtn.addEventListener('click', function () {
-            createChatModal.style.display = 'none';
-        });
-    }
-
-    if (closeModalX && createChatModal) {
-        closeModalX.addEventListener('click', function () {
-            createChatModal.style.display = 'none';
-        });
-    }
-
-
-    // 5. ЖИВОЙ ПОИСК ЧАТОВ
-
-    const searchInput = document.getElementById('chat-search');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const filter = searchInput.value.toLowerCase();
-            const chats = document.querySelectorAll('.your_chat');
-
-            chats.forEach(function (chat) {
-                const titleElement = chat.querySelector('.chat-title');
-                if (titleElement) {
-                    const chatName = titleElement.textContent.toLowerCase();
-                    if (chatName.startsWith(filter)) {
-                        chat.style.display = 'flex'; 
-                    } else {
-                        chat.style.display = 'none'; 
-                    }
-                }
+        if (groupNameLink && messagesDiv && chatsDiv && membersDiv) {
+            groupNameLink.addEventListener('click', () => {
+                messagesDiv.classList.remove('active');
+                chatsDiv.classList.remove('active');
+                membersDiv.classList.add('active');
             });
-        });
-    }
+        }
+
+        if (arrowMessages && messagesDiv && chatsDiv && membersDiv) {
+            arrowMessages.addEventListener('click', () => {
+                messagesDiv.classList.remove('active');
+                chatsDiv.classList.add('active');
+                membersDiv.classList.remove('active');
+            });
+        }
+
+        if (arrowMembers && messagesDiv && chatsDiv && membersDiv) {
+            arrowMembers.addEventListener('click', () => {
+                messagesDiv.classList.add('active');
+                chatsDiv.classList.remove('active');
+                membersDiv.classList.remove('active');
+            });
+        }
+
+
+        // 4. МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ЧАТА 
+
+        const openModalBtn = document.getElementById('open_modal_btn');
+        const closeModalBtn = document.getElementById('close_modal_btn');
+        const createChatModal = document.getElementById('create_chat-modal');
+        const closeModalX = document.getElementById('close_modal_x');
+
+        if (openModalBtn && createChatModal) {
+            openModalBtn.addEventListener('click', function () {
+                createChatModal.style.display = 'flex';
+            });
+        }
+
+        if (closeModalBtn && createChatModal) {
+            closeModalBtn.addEventListener('click', function () {
+                createChatModal.style.display = 'none';
+            });
+        }
+
+        if (closeModalX && createChatModal) {
+            closeModalX.addEventListener('click', function () {
+                createChatModal.style.display = 'none';
+            });
+        }
+
+
+        // 5. ЖИВОЙ ПОИСК ЧАТОВ
+
+        const searchInput = document.getElementById('chat-search');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const filter = searchInput.value.toLowerCase();
+                const chats = document.querySelectorAll('.your_chat');
+
+                chats.forEach(function (chat) {
+                    const titleElement = chat.querySelector('.chat-title');
+                    if (titleElement) {
+                        const chatName = titleElement.textContent.toLowerCase();
+                        if (chatName.startsWith(filter)) {
+                            chat.style.display = 'flex'; 
+                        } else {
+                            chat.style.display = 'none'; 
+                        }
+                    }
+                });
+            });
+        }
 
 
     // 6. МОДАЛЬНОЕ ОКНО УДАЛЕНИЯ ЧАТА

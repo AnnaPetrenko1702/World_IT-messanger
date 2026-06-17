@@ -261,9 +261,9 @@ def handle_message_event(data):
         'username': current_user_name,
         'user_id': current_user_id,
         'group_id': group_id,
-        'color_r': flask_login.current_user.color_r or 128,
-        'color_g': flask_login.current_user.color_g or 128,
-        'color_b': flask_login.current_user.color_b or 128
+        'color_r': flask_login.current_user.color_r or 255,
+        'color_g': flask_login.current_user.color_g or 255,
+        'color_b': flask_login.current_user.color_b or 255
     }
 
     flask_socketio.emit('message', payload, to=f'room_{group_id}')

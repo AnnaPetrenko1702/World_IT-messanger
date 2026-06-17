@@ -107,7 +107,18 @@
                                 <h1 class="chat-name-heading font-bold chat-title">{{ my_group.group_name }}</h1>
                                 <p id="saved_time">15m ago</p>
                             </div>
-                            <p class="chat-subtext client-subtext">{{my_group.last_message.author.username}}: {{ my_group.last_message.content if my_group.last_message else 'Нет сообщений' }}</p>
+                            <p class="chat-subtext client-subtext">
+                                {% if my_group.last_message %}
+                                    {% if my_group.last_message.author %}
+                                        <strong>{{ my_group.last_message.author.username }}:</strong>
+                                    {% else %}
+                                        <strong>Удаленный пользователь:</strong>
+                                    {% endif %}
+                                    {{ my_group.last_message.content }}
+                                {% else %}
+                                    Нет сообщений
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </a>
@@ -143,7 +154,18 @@
                                     <h1 class="chat-name-heading font-medium chat-title">{{ group.group_name }}</h1>
                                     <p id="saved_time">2m ago</p>
                                 </div>
-                                <p class="chat-subtext">{{group.last_message.author.username}}: {{ group.last_message.content if group.last_message else 'Нет сообщений' }}</p>
+                                <p class="chat-subtext">
+                                    {% if group.last_message %}
+                                        {% if group.last_message.author %}
+                                            <strong>{{ group.last_message.author.username }}:</strong>
+                                        {% else %}
+                                            <strong>Удаленный пользователь:</strong>
+                                        {% endif %}
+                                        {{ group.last_message.content }}
+                                    {% else %}
+                                        Нет сообщений
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </a>
