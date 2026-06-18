@@ -133,12 +133,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const avatar = document.createElement('div');
             avatar.classList.add('msg-avatar');
             
-            // ДОПИСАНО: Динамически красим аватарку в реальном времени из данных сокета
             avatar.style.backgroundColor = `rgb(${data.color_r || 128}, ${data.color_g || 128}, ${data.color_b || 128})`;
 
             const displayName = isOwn ? 'You' : data.username;
             
-            // ИСПРАВЛЕНО: Берем первую букву реального юзернейма, а не слова "You"
             avatar.textContent = (data.username || '?').slice(0, 1).toUpperCase();
 
             const wrapper = document.createElement('div');
@@ -153,8 +151,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const time = document.createElement('span');
             time.classList.add('msg-time');
-            const now = new Date();
-            time.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            time.textContent = data.time; 
+
+            meta.appendChild(author);
+            meta.appendChild(time);
 
             meta.appendChild(author);
             meta.appendChild(time);

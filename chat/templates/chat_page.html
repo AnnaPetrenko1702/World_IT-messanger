@@ -240,7 +240,7 @@
                                         <span class="msg-username">
                                             {% if msg.user_id == user.id %}You{% else %}{{ msg.author.username }}{% endif %}
                                         </span>
-                                        <span class="msg-time">9:29 AM</span>
+                                        <span class="msg-time">{{ msg.created_at.strftime('%H:%M') }}</span>
                                     </div>
                                     <span class="message-text">{{ msg.content }}</span>
                                 </div>

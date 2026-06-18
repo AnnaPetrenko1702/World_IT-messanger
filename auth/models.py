@@ -1,5 +1,6 @@
 from app.database import DATABASE
 import flask_login
+import datetime
 
 
 
@@ -70,5 +71,6 @@ class Message(DATABASE.Model):
     groups = DATABASE.relationship('Groups', back_populates='messages')
     user_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey("user.id"), nullable = False)
     author = DATABASE.relationship("User", backref = "message")
+    created_at = DATABASE.Column(DATABASE.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 
