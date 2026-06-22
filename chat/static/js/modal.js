@@ -330,32 +330,118 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 8. КЛИК ПО УЧАСТНИКАМ (ПРОФИЛЬ ВНИЗУ)
 
-    const members = document.querySelectorAll('.member');
-    const profileBlock = document.getElementById('profile');
+    // const members = document.querySelectorAll('.member');
+    // const profileBlock = document.getElementById('profile');
     
+    // const profileLetters = document.getElementById('profile-letters');
+    // const profileFullname = document.getElementById('profile-fullname');
+    // const profileUsername = document.getElementById('profile-username');
+    // const closeBtn = document.getElementById('close-profile-btn');
+
+    // members.forEach(member => {
+    //     member.addEventListener('click', () => {
+    //         const username = member.getAttribute('data-username');
+    //         const fullname = member.getAttribute('data-fullname');
+    //         const initials = member.getAttribute('data-initials');
+
+    //         if (profileLetters) profileLetters.textContent = initials || 'CH';
+    //         if (profileFullname) profileFullname.textContent = fullname.trim() ? fullname : 'Без имени';
+    //         if (profileUsername) profileUsername.textContent = `@${username}`;
+
+    //         if (profileBlock) profileBlock.style.display = 'flex'; 
+    //     });
+    // });
+
+    // if (closeBtn && profileBlock) {
+    //     closeBtn.addEventListener('click', (e) => {
+    //         e.stopPropagation(); 
+    //         profileBlock.style.display = 'none'; 
+    //     });
+    // }
+    // 8. КЛИК ПО УЧАСТНИКАМ (ДЕЛЕГИРОВАНИЕ СОБЫТИЙ)
+
+    const membersList = document.querySelector('.members-list');
+    const profileBlock = document.getElementById('profile');
+
     const profileLetters = document.getElementById('profile-letters');
     const profileFullname = document.getElementById('profile-fullname');
     const profileUsername = document.getElementById('profile-username');
+    
     const closeBtn = document.getElementById('close-profile-btn');
 
-    members.forEach(member => {
-        member.addEventListener('click', () => {
+    // Слушаем клики на всем списке
+    if (membersList) {
+        membersList.addEventListener('click', (event) => {
+            // Проверяем, был ли клик совершен по участнику или внутри него
+            const member = event.target.closest('.member');
+            if (!member) return; // Если кликнули мимо карточки, ничего не делаем
+
+            // Достаем данные из дата-атрибутов
             const username = member.getAttribute('data-username');
             const fullname = member.getAttribute('data-fullname');
             const initials = member.getAttribute('data-initials');
 
+            // Подставляем данные в блок профиля
             if (profileLetters) profileLetters.textContent = initials || 'CH';
-            if (profileFullname) profileFullname.textContent = fullname.trim() ? fullname : 'Без имени';
+            if (profileFullname) profileFullname.textContent = fullname.trim() ? fullname : 'Без імені';
             if (profileUsername) profileUsername.textContent = `@${username}`;
 
+            // Показываем блок
             if (profileBlock) profileBlock.style.display = 'flex'; 
         });
-    });
+    }
 
+    // Корректное закрытие блока профиля при клике на крестик
     if (closeBtn && profileBlock) {
-        closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            profileBlock.style.display = 'none'; 
+        closeBtn.addEventListener('click', () => {
+            profileBlock.style.display = 'none';
+        });
+    }
+    
+// 9. ПАНЕЛЬ ЭМОДЗИ
+
+    const EMOJIS = [
+        "😀","😁","😂","🤣","😃","😄","😅","😆","😉","😊",
+        "😋","😎","😍","😘","🥰","😗","😙","😚","🙂","🤗",
+        "🤔","🤨","😐","😑","😶","🙄","😏","😣","😥","😮",
+        "🤐","😯","😪","😫","🥱","😴","😌","😛","😜","🤪",
+        "😝","🤤","😒","😓","😔","😕","🙃","🤑","😲","☹️",
+        "🙁","😖","😞","😟","😤","😢","😭","😦","😧","😨",
+        "😩","🤯","😬","😰","😱","🥵","🥶","😳","🤪","😡",
+        "😠","🤬","😷","🤒","🤕","🤢","🤮","🥴","😇","🥳",
+        "🥺","🤡","🤠","👻","💀","👽","🤖","🎃","😺","😸",
+        "👍","👎","👏","🙌","🙏","🤝","💪","✌️","🤞","👋",
+        "❤️","🧡","💛","💚","💙","💜","🖤","🤍","💔","💯",
+        "🔥","✨","🎉","🎂","☕","🍕","⚽","🏀","🎵","⭐"
+    ];
+
+    const emojiIcon = document.getElementById('emoji-icon');
+    const emojiPanel = document.getElementById('emoji-panel');
+
+    if (emojiIcon && emojiPanel && msgInput) {
+        EMOJIS.forEach(emoji => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.textContent = emoji;
+            item.addEventListener('click', () => {
+                const start = msgInput.selectionStart ?? msgInput.value.length;
+                const end = msgInput.selectionEnd ?? msgInput.value.length;
+                msgInput.value = msgInput.value.slice(0, start) + emoji + msgInput.value.slice(end);
+                msgInput.focus();
+                msgInput.selectionStart = msgInput.selectionEnd = start + emoji.length;
+            });
+            emojiPanel.appendChild(item);
+        });
+
+        emojiIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            emojiPanel.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!emojiPanel.contains(event.target) && event.target !== emojiIcon) {
+                emojiPanel.classList.remove('show');
+            }
         });
     }
 });
